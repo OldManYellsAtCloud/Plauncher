@@ -12,7 +12,7 @@ void Settings::init(QString path){
 
     QDir configDir {path};
     for (const QString& f: configDir.entryList()){
-        if (f.endsWith(".ini")){
+        if (f.endsWith(".cfg")){
             QSettings qs(path + QDir::separator() + f, QSettings::IniFormat);
             struct Launcher l;
 
