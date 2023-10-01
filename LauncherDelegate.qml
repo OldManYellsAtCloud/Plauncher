@@ -34,6 +34,8 @@ Rectangle {
         anchors.fill: parent
         onClicked: {
             launcherModel.runCommand(index)
+            // hide the launcher so the new app will have the space
+            visibilityHandler.hide()
         }
     }
 }

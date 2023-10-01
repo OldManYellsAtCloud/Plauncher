@@ -6,12 +6,14 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 6.2 REQUIRED COMPONENTS Quick QuickControls2)
-
+find_package(sdbus-c++)
 
 qt_add_executable(appLauncher
     main.cpp
     settings.h settings.cpp
     launchermodel.h launchermodel.cpp
+    visibilityhandler.h visibilityhandler.cpp
+    direction-client-glue.h
 )
 
 qt_add_qml_module(appLauncher
@@ -22,7 +24,7 @@ qt_add_qml_module(appLauncher
 )
 
 target_link_libraries(appLauncher
-    PRIVATE Qt6::Quick Qt6::QuickControls2
+    PRIVATE Qt6::Quick Qt6::QuickControls2 sdbus-c++
 )
 
 include(GNUInstallDirs)

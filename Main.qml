@@ -7,8 +7,12 @@ import sgy.pine.bus
 Window {
     width: 640
     height: 480
-    visible: true
+    visible: visibilityHandler.visible
     title: qsTr("Hello World")
+
+    VisiblityHandler {
+        id: visibilityHandler
+    }
 
     Button {
         id: restartButton

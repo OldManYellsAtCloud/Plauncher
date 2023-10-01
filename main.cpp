@@ -6,6 +6,7 @@
 #include "settings.h"
 #include "launchermodel.h"
 
+#include "visibilityhandler.h"
 int main(int argc, char *argv[])
 {
     QQuickStyle::setStyle("Material");
@@ -16,6 +17,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     qmlRegisterType<LauncherModel>("sgy.pine.bus", 1, 0, "LauncherModel");
+    qmlRegisterType<VisibilityHandler>("sgy.pine.bus", 1, 0, "VisiblityHandler");
 
     const QUrl url(u"qrc:/Launcher/Main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
