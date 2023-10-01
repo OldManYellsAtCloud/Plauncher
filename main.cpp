@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     QQuickStyle::setStyle("Material");
     QGuiApplication app(argc, argv);
 
-    Settings::getSettings().init("/home/gyuri/launcher");
+    Settings::getSettings().init("/etc/launcher");
 
     QQmlApplicationEngine engine;
 
@@ -27,10 +27,5 @@ int main(int argc, char *argv[])
         }, Qt::QueuedConnection);
     engine.load(url);
 
-
-    /*qDebug() << "sleeping";
-    LauncherModel *lm = new LauncherModel();
-    lm->runCommand(5);
-    qDebug() << "done sleeping";*/
     return app.exec();
 }
