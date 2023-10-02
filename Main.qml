@@ -15,17 +15,6 @@ Window {
     }
 
     Button {
-        id: restartButton
-        text: qsTr("Restart")
-        font.pixelSize: 18
-        font.bold: true
-        anchors.top: parent.top
-        anchors.left: parent.left
-        width: parent.width / 2
-        leftPadding: 5
-    }
-
-    Button {
         id: shutdownButton
         text: qsTr("Shut down")
         font.pixelSize: 18
@@ -33,7 +22,19 @@ Window {
         anchors.left: restartButton.right
         anchors.top: parent.top
         width: parent.width / 2
-        rightPadding: 5
+    }
+
+    Button {
+        id: hideButton
+        text: qsTr("Hide")
+        font.pixelSize: 18
+        font.bold: true
+        anchors.left: shutdownButton.right
+        anchors.top: parent.top
+        width: parent.width / 2
+        onClicked: {
+            visibilityHandler.hide()
+        }
     }
 
     Text {
@@ -55,10 +56,6 @@ Window {
     }
 
     GridView {
-        // topPadding: 20
-        // leftPadding: 20
-        // columns: 4
-        // spacing: 15
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: slider.bottom
