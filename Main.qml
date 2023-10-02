@@ -51,6 +51,7 @@ Window {
         to: 100
         width: parent.width
         anchors.top: brightnessText.bottom
+        bottomPadding: 5
     }
 
     GridView {

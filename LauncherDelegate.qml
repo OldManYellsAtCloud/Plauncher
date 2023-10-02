@@ -22,11 +22,11 @@ Rectangle {
 
     Text {
         id: label
+        topPadding: 3
         anchors.top: picframe.bottom
         anchors.horizontalCenter: picframe.horizontalCenter
         font.pixelSize: 15
-        width: 20
-        height: 20
+        height: 10
         color: "black"
     }
 
