@@ -2,7 +2,9 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Window
 
-import sgy.pine.bus
+import QtCore
+
+import sgy.pine.launcher
 
 Window {
     width: 640
@@ -14,14 +16,35 @@ Window {
         id: visibilityHandler
     }
 
+    BrightnessHandler {
+        id: brightnessHandler
+    }
+
+    ShutdownHandler {
+        id: shutdownHandler
+    }
+
+    Dialog {
+        id: shutdownDialog
+        title: qsTr("Shut down?")
+        standardButtons: Dialog.Yes | Dialog.Cancel
+        onAccepted: {
+            shutdownHandler.shutdown()
+        }
+        anchors.centerIn: parent
+    }
+
     Button {
         id: shutdownButton
         text: qsTr("Shut down")
         font.pixelSize: 18
         font.bold: true
-        anchors.left: restartButton.right
+        anchors.left: parent.left
         anchors.top: parent.top
         width: parent.width / 2
+        onClicked: {
+            shutdownDialog.open()
+        }
     }
 
     Button {
@@ -39,7 +62,7 @@ Window {
 
     Text {
         id: brightnessText
-        text: qsTr("Brightness")
+        text: qsTr("Brightness: " + slider.value)
         font.bold: true
         font.pixelSize: 20
         anchors.top: shutdownButton.bottom
@@ -50,9 +73,18 @@ Window {
         id: slider
         from: 0
         to: 100
+        stepSize: 1
         width: parent.width
         anchors.top: brightnessText.bottom
         bottomPadding: 5
+        onValueChanged: {
+            brightnessHandler.brightness = slider.value
+        }
+
+        Settings {
+            property alias value: slider.value
+        }
+
     }
 
     GridView {
