@@ -62,7 +62,7 @@ Window {
 
     Text {
         id: brightnessText
-        text: qsTr("Brightness: " + slider.value)
+        text: qsTr("Brightness: %1".arg(slider.value))
         font.bold: true
         font.pixelSize: 20
         anchors.top: shutdownButton.bottom
@@ -74,6 +74,7 @@ Window {
         from: 0
         to: 100
         stepSize: 1
+        value: 50
         width: parent.width
         anchors.top: brightnessText.bottom
         bottomPadding: 5
