@@ -6,6 +6,10 @@ BrightnessHandler::BrightnessHandler(QObject *parent)
     : QObject{parent}
 {
     brightnessFile.open(BRIGHTNESS_PATH);
+    if ((brightnessFile.rdstate() & std::ifstream::badbit) != 0){
+        qDebug() << "Could not open brightness file!";
+        exit(1);
+    }
 }
 
 BrightnessHandler::~BrightnessHandler()
@@ -17,10 +21,11 @@ int BrightnessHandler::getBrightness()
 {
     int realBrightness;
     std::string line;
+    brightnessFile.seekg(0);
     std::getline(brightnessFile, line);
     realBrightness = std::stoi(line);
-    brightnessFile.seekg(0);
-    return static_cast<int>(realBrightness / MAX_BRIGHTNESS * 100);
+
+    return ceil(realBrightness / MAX_BRIGHTNESS * 100);
 }
 
 void BrightnessHandler::setBrightness(int brightness)
