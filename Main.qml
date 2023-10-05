@@ -10,7 +10,6 @@ Window {
     width: 640
     height: 480
     visible: visibilityHandler.visible
-    title: qsTr("Hello World")
 
     VisiblityHandler {
         id: visibilityHandler

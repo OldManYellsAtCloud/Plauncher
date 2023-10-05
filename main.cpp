@@ -10,14 +10,21 @@
 #include "brightnesshandler.h"
 #include "shutdown.h"
 
+#define ORG_NAME  "MyPine"
+#define ORG_DOMAIN  "sgy.pine"
+
+#define SETTINGS_PATH  "/etc/launcher"
+
+
 int main(int argc, char *argv[])
 {
     QQuickStyle::setStyle("Material");
     QGuiApplication app(argc, argv);
-    app.setOrganizationName("My Pine Stuff");
-    app.setOrganizationDomain("sgy.pine");
+    // needed to persist settings by Qt
+    app.setOrganizationName(ORG_NAME);
+    app.setOrganizationDomain(ORG_DOMAIN);
 
-    Settings::getSettings().init("/etc/launcher");
+    Settings::getSettings().init(SETTINGS_PATH);
 
     QQmlApplicationEngine engine;
 
