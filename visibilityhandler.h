@@ -30,7 +30,7 @@ public:
 
 protected:
     // handle dbus event generated upon a directional touch event
-    void onTouchEvent(const std::string& direction) override;
+    void onTouchEvent(const std::string& direction);
 
 signals:
     void visibleChanged();

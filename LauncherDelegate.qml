@@ -3,11 +3,11 @@ import QtQuick
 Rectangle {
     property alias img: pic.source
     property alias text: label.text
-    width: 60
-    height: 75
+    width: 45
+    height: 70
     Rectangle {
         id: picframe
-        width: 60
+        width: 45
         height: 60
         border.color: "red"
         border.width: 1

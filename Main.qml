@@ -92,9 +92,12 @@ Window {
 
     GridView {
         anchors.left: parent.left
+        anchors.leftMargin: 20
         anchors.right: parent.right
         anchors.top: slider.bottom
         anchors.bottom: parent.bottom
+
+        cellWidth: (parent.width / 4) - 5
 
         model: launcherModel
         delegate: LauncherDelegate {
