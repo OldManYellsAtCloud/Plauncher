@@ -19,16 +19,12 @@ Window {
         id: brightnessHandler
     }
 
-    ShutdownHandler {
-        id: shutdownHandler
-    }
-
     Dialog {
         id: shutdownDialog
         title: qsTr("Shut down?")
         standardButtons: Dialog.Yes | Dialog.Cancel
         onAccepted: {
-            shutdownHandler.shutdown()
+            launcherModel.runCommand("shutdown -h now")
         }
         anchors.centerIn: parent
     }

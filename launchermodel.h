@@ -17,6 +17,7 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE void runCommand(int i);
+    Q_INVOKABLE void runCommand(QString s);
 
     enum RoleNames {
         launcherNameRole = Qt::UserRole,

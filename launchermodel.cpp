@@ -44,3 +44,12 @@ void LauncherModel::runCommand(int i)
     cmd.append(" &");
     system(cmd.c_str());
 }
+
+void LauncherModel::runCommand(QString s)
+{
+    if (!s.endsWith("&")) {
+        s.append(" &");
+    }
+    system(s.toStdString().c_str());
+}
+
