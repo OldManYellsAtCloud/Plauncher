@@ -19,9 +19,6 @@ enum message_type {
     GET_SEATS = 101
 };
 
-//std::string send_sway_message(const std::string& message, const int& payload_type);
-std::string send_sway_message(const std::string& message, const message_type& payload_type);
-
-
+std::string send_sway_message(const std::string& message, const message_type& payload_type, const int& timeout_sec = 3, void(*callback)(std::string) = nullptr);
 
 #endif // SWAY_UTILS_H

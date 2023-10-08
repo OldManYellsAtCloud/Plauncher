@@ -102,7 +102,7 @@ Window {
         anchors.leftMargin: 20
         anchors.right: parent.right
         anchors.top: slider.bottom
-        anchors.bottom: parent.bottom
+        anchors.bottom: taskmanagerList.top
 
         cellWidth: (parent.width / 4) - 5
 
@@ -116,6 +116,20 @@ Window {
 
     LauncherModel {
         id: launcherModel
+    }
+
+    ListView {
+        id: taskmanagerList
+        orientation: ListView.Horizontal
+        model: taskHandler
+
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        delegate: LauncherDelegate {
+            labelVisible: false
+        }
+
     }
 
 }

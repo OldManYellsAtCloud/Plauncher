@@ -1,3 +1,4 @@
+#include <functional>
 #include "taskhandler.h"
 #include "sway_utils.h"
 
@@ -57,10 +58,72 @@ std::vector<app> TaskHandler::getWindowList()
     return filterOutputs(outputArray);
 }
 
+void TaskHandler::taskCallback(std::string response){
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(response.c_str());
+    QString change = jsonDocument.object()["change"].toString();
+
+    if (change != "new" && change != "close")
+        return;
+
+    QJsonObject containerObject = jsonDocument.object()["container"].toObject();
+
+    std::vector<app> newWindowList = getWindowList();
+    std::sort(newWindowList.begin(), newWindowList.end(), appCompare);
+
+    int pidToHandle = containerObject["pid"].toInt();
+    int indexToHandle = -1;
+
+    if (change == "close") {
+        for (int i = 0; i < windowList.size(); ++i){
+            if (windowList.at(i).pid == pidToHandle){
+                indexToHandle = i;
+                break;
+            }
+        }
+
+        if (indexToHandle < 0)
+            return;
+
+        emit beginRemoveRows(QModelIndex(), indexToHandle, 1);
+        windowList.erase(windowList.begin() + indexToHandle);
+        emit endRemoveRows();
+    } else {
+        if (pidToHandle < windowList.at(0).pid){
+            indexToHandle = 0;
+        } else if (pidToHandle > windowList.at(windowList.size() - 1).pid){
+            indexToHandle = windowList.size();
+        } else {
+            for (int i = 0; i < windowList.size() - 2; ++i){
+                if (pidToHandle > windowList.at(i).pid && pidToHandle < windowList.at(i + 1).pid) {
+                    indexToHandle = i + 1;
+                    break;
+                }
+            }
+        }
+
+        app newApp = {
+            .name = containerObject["name"].toString().toStdString(),
+            .appId = containerObject["app_id"].toString().toStdString(),
+            .pid = containerObject["pid"].toInt()
+        };
+
+        emit beginInsertRows(QModelIndex(), indexToHandle, 1);
+        windowList.insert(windowList.begin() + indexToHandle, newApp);
+        emit endInsertRows();
+
+    }
+
+}
+
 TaskHandler::TaskHandler(QObject *parent)
     : QAbstractListModel{parent}
 {
+    swayMonitor = new std::thread(send_sway_message, "[\"window\"]", message_type::SUBSCRIBE, 0, &TaskHandler::taskCallback);
+}
 
+TaskHandler::~TaskHandler()
+{
+    delete(swayMonitor);
 }
 
 void TaskHandler::hideActiveWindow()
@@ -82,7 +145,7 @@ void TaskHandler::bringWindowToForeground()
 
 int TaskHandler::rowCount(const QModelIndex &parent) const
 {
-    return 0;
+    return windowList.size();
 }
 
 QVariant TaskHandler::data(const QModelIndex &index, int role) const
