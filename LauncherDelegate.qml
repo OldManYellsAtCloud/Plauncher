@@ -33,6 +33,7 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         onClicked: {
+            taskHandler.hideActiveWindow()
             launcherModel.runCommand(index)
             // hide the launcher so the new app will have the space
             visibilityHandler.hide()

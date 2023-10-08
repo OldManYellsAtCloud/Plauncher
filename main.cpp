@@ -8,6 +8,9 @@
 #include "launchermodel.h"
 #include "visibilityhandler.h"
 #include "brightnesshandler.h"
+#include "taskhandler.h"
+
+#include "sway_utils.h"
 
 #define ORG_NAME  "MyPine"
 #define ORG_DOMAIN  "sgy.pine"
@@ -30,6 +33,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<LauncherModel>("sgy.pine.launcher", 1, 0, "LauncherModel");
     qmlRegisterType<VisibilityHandler>("sgy.pine.launcher", 1, 0, "VisiblityHandler");
     qmlRegisterType<BrightnessHandler>("sgy.pine.launcher", 1, 0, "BrightnessHandler");
+    qmlRegisterType<TaskHandler>("sgy.pine.launcher", 1, 0, "TaskHandler");
 
     const QUrl url(u"qrc:/Launcher/Main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

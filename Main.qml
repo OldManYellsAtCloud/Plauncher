@@ -11,6 +11,12 @@ Window {
     height: 480
     visible: visibilityHandler.visible
 
+    onVisibilityChanged: {
+        if (visible){
+            taskHandler.hideActiveWindow()
+        }
+    }
+
     VisiblityHandler {
         id: visibilityHandler
     }
@@ -18,6 +24,11 @@ Window {
     BrightnessHandler {
         id: brightnessHandler
     }
+
+    TaskHandler {
+        id: taskHandler
+    }
+
 
     Dialog {
         id: shutdownDialog

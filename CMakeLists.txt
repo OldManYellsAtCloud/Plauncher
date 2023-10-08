@@ -14,6 +14,8 @@ qt_add_executable(appLauncher
     launchermodel.h launchermodel.cpp
     visibilityhandler.h visibilityhandler.cpp
     brightnesshandler.h brightnesshandler.cpp
+    taskhandler.h taskhandler.cpp
+    sway_utils.h sway_utils.cpp
     direction-client-glue.h
 )
 
