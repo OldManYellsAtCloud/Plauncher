@@ -161,7 +161,12 @@ void TaskHandler::removeTask(int pid)
         }
     }
 
-    beginRemoveRows(QModelIndex(), indexToHandle, 1);
+    if (indexToHandle < 0) {
+        qDebug() << "Could not find app to close! PID: " << pid;
+        return;
+    }
+
+    beginRemoveRows(QModelIndex(), indexToHandle, indexToHandle);
     windowList.erase(windowList.begin() + indexToHandle);
     endRemoveRows();
 }
@@ -222,9 +227,9 @@ QVariant TaskHandler::data(const QModelIndex &index, int role) const
     if (role == RoleNames::PidRole) {
         return windowList.at(index.row()).pid;
     } else if (role == RoleNames::PictureRole){
-        std::string appName = windowList.at(index.row()).name;
+        std::string appId = windowList.at(index.row()).appId;
         for (const auto& app: Settings::getSettings().getLauncherSettings()){
-            if (app.name.toStdString() == appName)
+            if (app.appId.toStdString() == appId)
                 return app.iconPath;
         }
     }

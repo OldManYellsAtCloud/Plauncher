@@ -8,6 +8,7 @@ struct Launcher{
     QString name;
     QString iconPath;
     QString command;
+    QString appId;
 };
 
 class Settings

@@ -19,6 +19,7 @@ void Settings::init(QString path){
             l.name = qs.childGroups().at(0);
             l.command = qs.value(l.name + "/command", "-").toString();
             l.iconPath = qs.value(l.name + "/iconPath", "-").toString();
+            l.appId = qs.value(l.name + "/appId", "-").toString();
 
             if (l.command == "-" || l.iconPath == "-"){
                 qDebug() << f << " config file is borked. Skipping.";
