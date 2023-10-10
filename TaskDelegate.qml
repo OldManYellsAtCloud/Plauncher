@@ -11,7 +11,7 @@ Rectangle {
         id: picframe
         width: 45
         height: 60
-        border.color: "red"
+        //border.color: "red"
 
         Image {
             id: pic
@@ -53,6 +53,8 @@ Rectangle {
         id: closeButton
         anchors.right: picframe.right
         anchors.top: picframe.top
+        anchors.topMargin: -5
+        anchors.rightMargin: -5
         height: 20
         width: 20
         radius: 10
@@ -61,7 +63,7 @@ Rectangle {
         Text {
             anchors.centerIn: parent
             text: "X"
-            font.pixelSize: 12
+            font.pixelSize: 13
             font.bold: true
             MouseArea {
                 anchors.fill: parent

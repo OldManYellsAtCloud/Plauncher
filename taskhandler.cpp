@@ -60,12 +60,11 @@ TaskHandler::TaskHandler(QObject *parent)
     m_roleNames[RoleNames::PidRole] = "pid";
     m_roleNames[RoleNames::PictureRole] = "picture";
 
-    windowList = std::vector<app>();
-
     cb = [this](std::string s){this->taskCallback(s);};
-    std::string cmd = "[\"window\"]";
 
-    swayMonitor = new std::thread(subscribe_sway_message, cmd, cb);
+
+
+    swayMonitor = new std::thread(subscribe_sway_message, "[\"window\"]", cb);
     initWindowList();
 }
 
@@ -85,13 +84,10 @@ void TaskHandler::initWindowList()
         }
     }
 
-    beginInsertRows(QModelIndex(), 0, i);
-    for (auto& win: initialWindowList){
-        if (!isProtectedWindow(win.name)){
-            windowList.push_back(win);
-        }
-    }
+    auto predicate = [](app a){return !isProtectedWindow(a.name);};
 
+    beginInsertRows(QModelIndex(), 0, i);
+    std::copy_if(initialWindowList.begin(), initialWindowList.end(), std::back_inserter(windowList), predicate);
     endInsertRows();
 }
 
@@ -107,24 +103,17 @@ std::vector<app> TaskHandler::getWindowList()
 
 void TaskHandler::addTask(int pid){
     std::vector<app> newWindowList = getWindowList();
-    std::sort(newWindowList.begin(), newWindowList.end(), appCompare);
 
-    app newApp;
+    auto comparator = [pid](app a){return a.pid == pid;};
+    auto it = std::find_if(newWindowList.begin(), newWindowList.end(), comparator);
 
-    for (const app& a: newWindowList){
-        if (a.pid == pid){
-            newApp = a;
-            break;
-        }
-    }
-
-    if (newApp.pid == -1){
+    if (it == newWindowList.end()){
         qDebug() << "Could not find pid " << pid << " in Sway tree!";
         return;
     }
 
-    if (isProtectedWindow(newApp.name)){
-        qDebug() << newApp.name << " window is protected.";
+    if (isProtectedWindow((*it).name)){
+        qDebug() << (*it).name << " window is protected.";
         return;
     }
 
@@ -135,7 +124,9 @@ void TaskHandler::addTask(int pid){
         indexToHandle = windowList.size();
     } else {
         for (int i = 0; i < windowList.size() - 2; ++i){
-            if (pid > windowList.at(i).pid && pid < windowList.at(i + 1).pid) {
+            // the list is sorted, so it's enough to check
+            // which app is the first to be smaller
+            if (pid > windowList.at(i).pid) {
                 indexToHandle = i + 1;
                 break;
             }
@@ -143,31 +134,22 @@ void TaskHandler::addTask(int pid){
     }
 
     beginInsertRows(QModelIndex(), indexToHandle, indexToHandle);
-    windowList.push_back(newApp);
-    std::sort(windowList.begin(), windowList.end(), appCompare);
+    windowList.insert(windowList.begin() + indexToHandle, *it);
     endInsertRows();
 }
 
 void TaskHandler::removeTask(int pid)
 {
-    app closedApp;
-    int indexToHandle = -1;
+    auto comparator = [pid](app a){return a.pid == pid;};
+    auto it = std::find_if(windowList.begin(), windowList.end(), comparator);
 
-    for (int i = 0; i < windowList.size(); ++i){
-        if (windowList.at(i).pid == pid){
-            closedApp = windowList.at(i);
-            indexToHandle = i;
-            break;
-        }
-    }
-
-    if (indexToHandle < 0) {
+    if (it == windowList.end()){
         qDebug() << "Could not find app to close! PID: " << pid;
         return;
     }
 
-    beginRemoveRows(QModelIndex(), indexToHandle, indexToHandle);
-    windowList.erase(windowList.begin() + indexToHandle);
+    beginRemoveRows(QModelIndex(), int(it - windowList.begin()), int(it - windowList.begin()));
+    windowList.erase(it);
     endRemoveRows();
 }
 

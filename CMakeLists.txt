@@ -40,4 +40,3 @@ install(TARGETS appLauncher
 )
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
-target_compile_options(appLauncher PRIVATE -g)

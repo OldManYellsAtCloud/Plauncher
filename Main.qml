@@ -11,6 +11,7 @@ Window {
     height: 480
     visible: visibilityHandler.visible
 
+
     onVisibilityChanged: {
         if (visible){
             taskHandler.hideActiveWindow()
@@ -116,6 +117,18 @@ Window {
         id: launcherModel
     }
 
+    Text {
+        id: taskManagerLabel
+        anchors.bottom: taskmanagerList.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottomMargin: 5
+        height: 15
+        text: qsTr("Current tasks")
+        font.bold: true
+        font.pixelSize: 15
+    }
+
     ListView {
         id: taskmanagerList
         orientation: ListView.Horizontal
@@ -124,7 +137,16 @@ Window {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        height: 100
+        height: 70
+
+        spacing: 10
+
+        ScrollBar.horizontal: ScrollBar {
+            active: true
+            interactive: false
+            snapMode: ScrollBar.SnapOnRelease
+        }
+
         delegate: TaskDelegate {
             id: taskDelegate
             pid: model.pid
