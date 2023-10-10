@@ -1,6 +1,7 @@
 #include <functional>
 #include "taskhandler.h"
 #include "sway_utils.h"
+#include "settings.h"
 
 #include <QJsonDocument>
 #include <QJsonArray>
@@ -34,6 +35,11 @@ std::vector<app> filterWorkspaces(QJsonArray workspaceList){
         QJsonArray windowList = ws.toObject()["nodes"].toArray();
         auto newWindows = filterWindowList(windowList);
         windows.insert(std::end(windows), std::begin(newWindows), std::end(newWindows));
+
+        // scratchpad stores containers as floating nodes
+        windowList = ws.toObject()["floating_nodes"].toArray();
+        newWindows = filterWindowList(windowList);
+        windows.insert(std::end(windows), std::begin(newWindows), std::end(newWindows));
     }
     return windows;
 }
@@ -48,6 +54,47 @@ std::vector<app> filterOutputs(QJsonArray outputList){
     return windows;
 }
 
+TaskHandler::TaskHandler(QObject *parent)
+    : QAbstractListModel{parent}
+{
+    m_roleNames[RoleNames::PidRole] = "pid";
+    m_roleNames[RoleNames::PictureRole] = "picture";
+
+    windowList = std::vector<app>();
+
+    cb = [this](std::string s){this->taskCallback(s);};
+    std::string cmd = "[\"window\"]";
+
+    swayMonitor = new std::thread(subscribe_sway_message, cmd, cb);
+    initWindowList();
+}
+
+TaskHandler::~TaskHandler()
+{
+    delete(swayMonitor);
+}
+
+void TaskHandler::initWindowList()
+{
+    auto initialWindowList = getWindowList();
+    std::sort(initialWindowList.begin(), initialWindowList.end(), appCompare);
+    int i = 0;
+    for (auto& win: initialWindowList){
+        if (!isProtectedWindow(win.name)){
+            ++i;
+        }
+    }
+
+    beginInsertRows(QModelIndex(), 0, i);
+    for (auto& win: initialWindowList){
+        if (!isProtectedWindow(win.name)){
+            windowList.push_back(win);
+        }
+    }
+
+    endInsertRows();
+}
+
 std::vector<app> TaskHandler::getWindowList()
 {
     std::vector<app> windowList;
@@ -58,72 +105,89 @@ std::vector<app> TaskHandler::getWindowList()
     return filterOutputs(outputArray);
 }
 
+void TaskHandler::addTask(int pid){
+    std::vector<app> newWindowList = getWindowList();
+    std::sort(newWindowList.begin(), newWindowList.end(), appCompare);
+
+    app newApp;
+
+    for (const app& a: newWindowList){
+        if (a.pid == pid){
+            newApp = a;
+            break;
+        }
+    }
+
+    if (newApp.pid == -1){
+        qDebug() << "Could not find pid " << pid << " in Sway tree!";
+        return;
+    }
+
+    if (isProtectedWindow(newApp.name)){
+        qDebug() << newApp.name << " window is protected.";
+        return;
+    }
+
+    int indexToHandle;
+    if (windowList.size() == 0 || pid < windowList.at(0).pid){
+        indexToHandle = 0;
+    } else if (pid > windowList.at(windowList.size() - 1).pid){
+        indexToHandle = windowList.size();
+    } else {
+        for (int i = 0; i < windowList.size() - 2; ++i){
+            if (pid > windowList.at(i).pid && pid < windowList.at(i + 1).pid) {
+                indexToHandle = i + 1;
+                break;
+            }
+        }
+    }
+
+    beginInsertRows(QModelIndex(), indexToHandle, indexToHandle);
+    windowList.push_back(newApp);
+    std::sort(windowList.begin(), windowList.end(), appCompare);
+    endInsertRows();
+}
+
+void TaskHandler::removeTask(int pid)
+{
+    app closedApp;
+    int indexToHandle = -1;
+
+    for (int i = 0; i < windowList.size(); ++i){
+        if (windowList.at(i).pid == pid){
+            closedApp = windowList.at(i);
+            indexToHandle = i;
+            break;
+        }
+    }
+
+    beginRemoveRows(QModelIndex(), indexToHandle, 1);
+    windowList.erase(windowList.begin() + indexToHandle);
+    endRemoveRows();
+}
+
 void TaskHandler::taskCallback(std::string response){
     QJsonDocument jsonDocument = QJsonDocument::fromJson(response.c_str());
     QString change = jsonDocument.object()["change"].toString();
 
-    if (change != "new" && change != "close")
+    if (change != "new" && change != "close") {
         return;
-
-    QJsonObject containerObject = jsonDocument.object()["container"].toObject();
-
-    std::vector<app> newWindowList = getWindowList();
-    std::sort(newWindowList.begin(), newWindowList.end(), appCompare);
-
-    int pidToHandle = containerObject["pid"].toInt();
-    int indexToHandle = -1;
-
-    if (change == "close") {
-        for (int i = 0; i < windowList.size(); ++i){
-            if (windowList.at(i).pid == pidToHandle){
-                indexToHandle = i;
-                break;
-            }
-        }
-
-        if (indexToHandle < 0)
-            return;
-
-        emit beginRemoveRows(QModelIndex(), indexToHandle, 1);
-        windowList.erase(windowList.begin() + indexToHandle);
-        emit endRemoveRows();
-    } else {
-        if (pidToHandle < windowList.at(0).pid){
-            indexToHandle = 0;
-        } else if (pidToHandle > windowList.at(windowList.size() - 1).pid){
-            indexToHandle = windowList.size();
-        } else {
-            for (int i = 0; i < windowList.size() - 2; ++i){
-                if (pidToHandle > windowList.at(i).pid && pidToHandle < windowList.at(i + 1).pid) {
-                    indexToHandle = i + 1;
-                    break;
-                }
-            }
-        }
-
-        app newApp = {
-            .name = containerObject["name"].toString().toStdString(),
-            .appId = containerObject["app_id"].toString().toStdString(),
-            .pid = containerObject["pid"].toInt()
-        };
-
-        emit beginInsertRows(QModelIndex(), indexToHandle, 1);
-        windowList.insert(windowList.begin() + indexToHandle, newApp);
-        emit endInsertRows();
-
     }
 
-}
+    QJsonObject containerObject = jsonDocument.object()["container"].toObject();
+    QString app_id = containerObject["app_id"].toString();
+    if (app_id == "pine.sgy.appLauncher") {
+        return;
+    }
 
-TaskHandler::TaskHandler(QObject *parent)
-    : QAbstractListModel{parent}
-{
-    swayMonitor = new std::thread(send_sway_message, "[\"window\"]", message_type::SUBSCRIBE, 0, &TaskHandler::taskCallback);
-}
+    int pidToHandle = containerObject["pid"].toInt();
 
-TaskHandler::~TaskHandler()
-{
-    delete(swayMonitor);
+    if (change == "close") {
+        removeTask(pidToHandle);
+    } else {
+        addTask(pidToHandle);
+    }
+
 }
 
 void TaskHandler::hideActiveWindow()
@@ -138,9 +202,12 @@ void TaskHandler::hideActiveWindow()
     }
 }
 
-void TaskHandler::bringWindowToForeground()
+void TaskHandler::bringWindowToForeground(QString pid)
 {
-
+    hideActiveWindow();
+    send_sway_message("[pid=" + pid.toStdString() + "] focus", message_type::RUN_COMMAND);
+    send_sway_message("move container to workspace current", message_type::RUN_COMMAND);
+    send_sway_message("floating disable", message_type::RUN_COMMAND);
 }
 
 int TaskHandler::rowCount(const QModelIndex &parent) const
@@ -150,5 +217,21 @@ int TaskHandler::rowCount(const QModelIndex &parent) const
 
 QVariant TaskHandler::data(const QModelIndex &index, int role) const
 {
+    if (index.row() < 0 || index.row() >= windowList.size())
+        return QVariant();
+    if (role == RoleNames::PidRole) {
+        return windowList.at(index.row()).pid;
+    } else if (role == RoleNames::PictureRole){
+        std::string appName = windowList.at(index.row()).name;
+        for (const auto& app: Settings::getSettings().getLauncherSettings()){
+            if (app.name.toStdString() == appName)
+                return app.iconPath;
+        }
+    }
     return QVariant();
+}
+
+QHash<int, QByteArray> TaskHandler::roleNames() const
+{
+    return m_roleNames;
 }

@@ -4,6 +4,7 @@ project(Launcher VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#set(CMAKE_CXX_STANDARD 20)
 
 find_package(Qt6 6.2 REQUIRED COMPONENTS Quick QuickControls2)
 find_package(sdbus-c++)
@@ -24,6 +25,7 @@ qt_add_qml_module(appLauncher
     VERSION 1.0
     QML_FILES Main.qml
     QML_FILES LauncherDelegate.qml
+    QML_FILES TaskDelegate.qml
 )
 
 target_link_libraries(appLauncher
@@ -38,3 +40,4 @@ install(TARGETS appLauncher
 )
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
+target_compile_options(appLauncher PRIVATE -g)

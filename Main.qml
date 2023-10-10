@@ -29,7 +29,6 @@ Window {
         id: taskHandler
     }
 
-
     Dialog {
         id: shutdownDialog
         title: qsTr("Shut down?")
@@ -108,7 +107,6 @@ Window {
 
         model: launcherModel
         delegate: LauncherDelegate {
-            // required property int index
             img: "file:" + model.icon
             text: model.launcherName
         }
@@ -126,10 +124,11 @@ Window {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        delegate: LauncherDelegate {
-            labelVisible: false
+        height: 100
+        delegate: TaskDelegate {
+            id: taskDelegate
+            pid: model.pid
+            img: "file:" + model.picture
         }
-
     }
-
 }

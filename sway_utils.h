@@ -1,6 +1,8 @@
 #ifndef SWAY_UTILS_H
 #define SWAY_UTILS_H
 
+#include <functional>
+
 enum message_type {
     RUN_COMMAND = 0,
     GET_WORKSPACES = 1,
@@ -19,6 +21,7 @@ enum message_type {
     GET_SEATS = 101
 };
 
-std::string send_sway_message(const std::string& message, const message_type& payload_type, const int& timeout_sec = 3, void(*callback)(std::string) = nullptr);
+std::string send_sway_message(std::string message, message_type payload_type);
+void subscribe_sway_message(std::string message, std::function<void(std::string)> callback);
 
 #endif // SWAY_UTILS_H
