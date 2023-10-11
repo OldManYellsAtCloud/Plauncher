@@ -42,8 +42,6 @@ int main(int argc, char *argv[])
                 QCoreApplication::exit(-1);
         }, Qt::QueuedConnection);
     engine.load(url);
-    /*send_sway_message("", message_type::GET_TREE);
-    send_sway_message("[\"window\"]", message_type::SUBSCRIBE, 0);*/
 
     return app.exec();
 }

@@ -59,10 +59,7 @@ TaskHandler::TaskHandler(QObject *parent)
 {
     m_roleNames[RoleNames::PidRole] = "pid";
     m_roleNames[RoleNames::PictureRole] = "picture";
-
     cb = [this](std::string s){this->taskCallback(s);};
-
-
 
     swayMonitor = new std::thread(subscribe_sway_message, "[\"window\"]", cb);
     initWindowList();

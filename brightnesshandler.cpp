@@ -6,7 +6,7 @@ BrightnessHandler::BrightnessHandler(QObject *parent)
     : QObject{parent}
 {
     brightnessFile.open(BRIGHTNESS_PATH);
-    if ((brightnessFile.rdstate() & std::ifstream::badbit) != 0){
+    if (brightnessFile.rdstate() != std::ifstream::goodbit){
         qDebug() << "Could not open brightness file!";
         exit(1);
     }

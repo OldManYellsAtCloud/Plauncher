@@ -116,12 +116,12 @@ void send_ipc_message(const std::string& message, const int& payload_type, int s
 
 int init_sway_socket(const int& timeout_sec){
     char* socket_path = getenv("SWAYSOCK");
-    if (socket_path == NULL) {
+    if (socket_path == nullptr) {
+        qDebug() << "SWAYSOCKET environment variable is not set!";
         exit(1);
     }
 
     int sock_fd = socket(AF_UNIX, SOCK_STREAM, 0);
-
     sockaddr_un address;
 
     address.sun_family = AF_UNIX;
