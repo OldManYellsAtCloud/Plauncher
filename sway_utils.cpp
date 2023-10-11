@@ -15,50 +15,6 @@
 
 #define IPC_HEADER_SIZE  14
 
-void get_sub_response(int sock_fd, std::function<void(std::string)> &callback){
-    char data[IPC_HEADER_SIZE];
-
-    memset(data, 0, IPC_HEADER_SIZE);
-
-    uint32_t total;
-    int32_t response_length;
-    size_t size;
-
-    std::unique_ptr<char[]> buffer;
-
-    do {
-        total = 0;
-
-        while (total < IPC_HEADER_SIZE) {
-            size = recv(sock_fd, data + total, IPC_HEADER_SIZE - total, 0);
-            if (size < 0 ) {
-                return;
-            }
-            total += size;
-        }
-
-        memcpy(&response_length, data + 6, sizeof(response_length));
-
-        buffer = std::make_unique<char[]>(response_length + 1);
-        //memset(buffer.get(), 0, response_length + 1);
-
-        total = 0;
-        while (total < response_length) {
-            size = recv(sock_fd, buffer.get() + total, response_length - total, 0);
-            if (size < 0 ) {
-                return;
-            }
-            total += size;
-        }
-
-        qDebug() << buffer.get();
-
-        callback(buffer.get());
-
-    } while (true);
-}
-
-
 std::string get_ipc_response(int sock_fd){
     char data[IPC_HEADER_SIZE];
 
@@ -145,13 +101,14 @@ int init_sway_socket(const int& timeout_sec){
 void subscribe_sway_message(std::string message, std::function<void(std::string)> callback){
     int sock_fd = init_sway_socket(0);
     send_ipc_message(message, message_type::SUBSCRIBE, sock_fd);
-    bool is_subscription = true;
-    get_sub_response(sock_fd, callback);
+
+    while(true) {
+        callback(get_ipc_response(sock_fd));
+    }
 }
 
 std::string send_sway_message(std::string message, message_type payload_type){
     int sock_fd = init_sway_socket(3);
     send_ipc_message(message, payload_type, sock_fd);
-    bool is_subscription = false;
     return get_ipc_response(sock_fd);
 }
