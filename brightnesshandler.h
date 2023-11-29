@@ -16,7 +16,7 @@ class BrightnessHandler : public QObject
 private:
     std::fstream brightnessFile;
     std::fstream maxBrightnessFile;
-    int maxBrightness;
+    double maxBrightness;
 
 public:
     explicit BrightnessHandler(QObject *parent = nullptr);
