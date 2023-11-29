@@ -6,7 +6,7 @@
 #include <iostream>
 
 #define BRIGHTNESS_PATH "/sys/class/backlight/backlight/brightness"
-#define MAX_BRIGHTNESS  3124.0
+#define MAX_BRIGHTNESS_PATH "/sys/class/backlight/backlight/max_brightness"
 
 class BrightnessHandler : public QObject
 {
@@ -15,6 +15,8 @@ class BrightnessHandler : public QObject
     Q_PROPERTY(int brightness READ getBrightness WRITE setBrightness NOTIFY brightnessChanged)
 private:
     std::fstream brightnessFile;
+    std::fstream maxBrightnessFile;
+    int maxBrightness;
 
 public:
     explicit BrightnessHandler(QObject *parent = nullptr);

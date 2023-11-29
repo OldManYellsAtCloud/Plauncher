@@ -73,7 +73,7 @@ void send_ipc_message(const std::string& message, const int& payload_type, int s
 int init_sway_socket(const int& timeout_sec){
     char* socket_path = getenv("SWAYSOCK");
     if (socket_path == nullptr) {
-        qDebug() << "SWAYSOCKET environment variable is not set!";
+        qDebug() << "SWAYSOCK environment variable is not set!";
         exit(1);
     }
 
