@@ -10,14 +10,14 @@ find_package(Qt6 6.2 REQUIRED COMPONENTS Quick QuickControls2)
 find_package(sdbus-c++)
 
 qt_add_executable(appLauncher
-    main.cpp
-    settings.h settings.cpp
-    launchermodel.h launchermodel.cpp
-    visibilityhandler.h visibilityhandler.cpp
-    brightnesshandler.h brightnesshandler.cpp
-    taskhandler.h taskhandler.cpp
-    sway_utils.h sway_utils.cpp
-    direction-client-glue.h
+    src/main.cpp
+    include/settings.h src/settings.cpp
+    include/launchermodel.h src/launchermodel.cpp
+    include/visibilityhandler.h src/visibilityhandler.cpp
+    include/brightnesshandler.h src/brightnesshandler.cpp
+    include/taskhandler.h src/taskhandler.cpp
+    include/sway_utils.h src/sway_utils.cpp
+    include/direction-client-glue.h
 )
 
 qt_add_qml_module(appLauncher
@@ -31,6 +31,8 @@ qt_add_qml_module(appLauncher
 target_link_libraries(appLauncher
     PRIVATE Qt6::Quick Qt6::QuickControls2 sdbus-c++
 )
+
+target_include_directories(appLauncher PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 include(GNUInstallDirs)
 install(TARGETS appLauncher
