@@ -6,12 +6,12 @@
 class LauncherModel : public QAbstractListModel
 {
     Q_OBJECT
+private:
     QHash<int, QByteArray> m_roleNames;
 public:
     explicit LauncherModel(QObject *parent = nullptr);
 
     // QAbstractItemModel interface
-public:
     int rowCount(const QModelIndex &parent) const override;
     QVariant data(const QModelIndex &index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;

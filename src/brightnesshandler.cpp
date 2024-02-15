@@ -1,6 +1,7 @@
 #include "brightnesshandler.h"
 #include <string>
 #include <ios>
+#include <loglibrary.h>
 
 BrightnessHandler::BrightnessHandler(QObject *parent)
     : QObject{parent}
@@ -9,12 +10,12 @@ BrightnessHandler::BrightnessHandler(QObject *parent)
     maxBrightnessFile.open(MAX_BRIGHTNESS_PATH, std::ios_base::in);
 
     if (brightnessFile.rdstate() != std::ifstream::goodbit){
-        qDebug() << "Could not open brightness file!";
+        ERROR("Could not open brightness file!");
         exit(1);
     }
 
     if (maxBrightnessFile.rdstate() != std::ifstream::goodbit){
-        qDebug() << "Could not open max_brightness file!";
+        ERROR("Could not open max_brightness file!");
         exit(1);
     }
 

@@ -10,8 +10,13 @@
 #include <thread>
 #include <functional>
 
+#include "screenlock-client-glue.h"
+
+#define DBUS_DESTINATION "org.gspine.display"
+#define DBUS_OBJECTPATH  "/org/gspine/display"
+
 // these app IDs shouldn't be hidden/handled on any way
-static std::string PROTECTED_APPIDS[] = {"appLauncher", "launcher"};
+static std::string PROTECTED_APPIDS[] = {"appLauncher", "launcher", "screenlock", "appScreenlock"};
 
 struct app {
     std::string name;
@@ -26,7 +31,7 @@ static bool appCompare(app a, app b){
 
 
 
-class TaskHandler : public QAbstractListModel
+class TaskHandler : public QAbstractListModel, public sdbus::ProxyInterfaces<sgy::pine::screenLock_proxy>
 {
     Q_OBJECT
     QML_ELEMENT
@@ -36,15 +41,20 @@ private:
     std::function<void(std::string)> cb;
     std::vector<app> windowList;
 
+    int lastActivePid;
+
     QHash<int, QByteArray> m_roleNames;
     void addTask(int pid);
     void removeTask(int pid);
     void initWindowList();
 
+protected:
+    void onScreenLocked(const bool& screenLocked) override;
+
 public:
     explicit TaskHandler(QObject *parent = nullptr);
     ~TaskHandler();
-    Q_INVOKABLE void hideActiveWindow();
+    Q_INVOKABLE int hideActiveWindow();
     Q_INVOKABLE void bringWindowToForeground(QString pid);
     void taskCallback(std::string response);
 

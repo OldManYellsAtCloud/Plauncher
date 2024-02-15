@@ -1,11 +1,13 @@
 #include <functional>
-#include "taskhandler.h"
-#include "sway_utils.h"
-#include "settings.h"
-
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
+
+#include <loglibrary.h>
+
+#include "taskhandler.h"
+#include "sway_utils.h"
+#include "settings.h"
 
 bool isProtectedWindow(std::string win){
     auto *res = std::find(std::begin(PROTECTED_APPIDS), std::end(PROTECTED_APPIDS), win);
@@ -55,7 +57,7 @@ std::vector<app> filterOutputs(QJsonArray outputList){
 }
 
 TaskHandler::TaskHandler(QObject *parent)
-    : QAbstractListModel{parent}
+    : QAbstractListModel{parent}, ProxyInterfaces(DBUS_DESTINATION, DBUS_OBJECTPATH)
 {
     m_roleNames[RoleNames::PidRole] = "pid";
     m_roleNames[RoleNames::PictureRole] = "picture";
@@ -63,11 +65,13 @@ TaskHandler::TaskHandler(QObject *parent)
 
     swayMonitor = new std::thread(subscribe_sway_message, "[\"window\"]", cb);
     initWindowList();
+    registerProxy();
 }
 
 TaskHandler::~TaskHandler()
 {
     delete(swayMonitor);
+    unregisterProxy();
 }
 
 void TaskHandler::initWindowList()
@@ -88,6 +92,17 @@ void TaskHandler::initWindowList()
     endInsertRows();
 }
 
+void TaskHandler::onScreenLocked(const bool &screenLocked)
+{
+    if (screenLocked){
+        lastActivePid = hideActiveWindow();
+    } else if (lastActivePid > 0) {
+        bringWindowToForeground(QString::number(lastActivePid));
+        lastActivePid = 0;
+    }
+
+}
+
 std::vector<app> TaskHandler::getWindowList()
 {
     std::vector<app> windowList;
@@ -105,12 +120,12 @@ void TaskHandler::addTask(int pid){
     auto it = std::find_if(newWindowList.begin(), newWindowList.end(), comparator);
 
     if (it == newWindowList.end()){
-        qDebug() << "Could not find pid " << pid << " in Sway tree!";
+        ERROR("Could not find pid {} in Sway tree!", pid);
         return;
     }
 
     if (isProtectedWindow((*it).name)){
-        qDebug() << (*it).name << " window is protected.";
+        LOG("{} window is protected", (*it).name);
         return;
     }
 
@@ -141,7 +156,7 @@ void TaskHandler::removeTask(int pid)
     auto it = std::find_if(windowList.begin(), windowList.end(), comparator);
 
     if (it == windowList.end()){
-        qDebug() << "Could not find app to close! PID: " << pid;
+        ERROR("Could not find app to close! PID: {}", pid);
         return;
     }
 
@@ -174,16 +189,18 @@ void TaskHandler::taskCallback(std::string response){
 
 }
 
-void TaskHandler::hideActiveWindow()
+int TaskHandler::hideActiveWindow()
 {
     std::vector<app> windowList = getWindowList();
-    qDebug() << "Received " << windowList.size() << " windows.";
+    LOG("Received {} windows", windowList.size());
     for (const auto& window: windowList){
         if (window.visible){
             send_sway_message("[pid=" + std::to_string(window.pid) + "] focus", message_type::RUN_COMMAND);
             send_sway_message("move container to scratchpad", message_type::RUN_COMMAND);
+            return window.pid;
         }
     }
+    return 0;
 }
 
 void TaskHandler::bringWindowToForeground(QString pid)

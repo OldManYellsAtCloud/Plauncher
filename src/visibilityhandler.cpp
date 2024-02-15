@@ -33,3 +33,11 @@ void VisibilityHandler::onTouchEvent(const std::string &direction)
         unhide();
     }
 }
+
+void VisibilityHandler::onScreenLocked(const bool &screenLocked)
+{
+    if (screenLocked && visible){
+        hide();
+    }
+}
+
