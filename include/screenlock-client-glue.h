@@ -10,13 +10,13 @@
 #include <string>
 #include <tuple>
 
-namespace sgy {
-namespace pine {
+namespace org {
+namespace gspine {
 
 class screenLock_proxy
 {
 public:
-    static constexpr const char* INTERFACE_NAME = "sgy.pine.screenLock";
+    static constexpr const char* INTERFACE_NAME = "org.gspine.display";
 
 protected:
     screenLock_proxy(sdbus::IProxy& proxy)

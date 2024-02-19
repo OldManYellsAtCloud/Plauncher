@@ -16,20 +16,17 @@ class Gesture_proxy
 {
 public:
     static constexpr const char* INTERFACE_NAME = "org.gspine.Gesture";
-    static constexpr const char* INTERFACE_NAME_SCREENLOCK = "sgy.pine.screenLock";
 
 protected:
     Gesture_proxy(sdbus::IProxy& proxy)
         : proxy_(proxy)
     {
-        proxy_.uponSignal("touchEvent").onInterface(INTERFACE_NAME).call([this](const std::string& direction){ this->onTouchEvent(direction); });
-        proxy_.uponSignal("screenLocked").onInterface(INTERFACE_NAME_SCREENLOCK).call([this](const bool& screenLocked){ this->onScreenLocked(screenLocked); });
+        proxy_.uponSignal("TOP_TO_BOTTOM").onInterface(INTERFACE_NAME).call([this](){ this->onTouchEvent(); });
     }
 
     ~Gesture_proxy() = default;
 
-    virtual void onTouchEvent(const std::string& direction) = 0;
-    virtual void onScreenLocked(const bool& screenLocked) = 0;
+    virtual void onTouchEvent() = 0;
 
 private:
     sdbus::IProxy& proxy_;

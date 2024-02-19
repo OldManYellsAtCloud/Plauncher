@@ -12,8 +12,8 @@
 
 #include "screenlock-client-glue.h"
 
-#define DBUS_DESTINATION "org.gspine.display"
-#define DBUS_OBJECTPATH  "/org/gspine/display"
+#define DISPLAY_DBUS_DESTINATION "org.gspine.display"
+#define DISPLAY_DBUS_OBJECTPATH  "/org/gspine/display"
 
 // these app IDs shouldn't be hidden/handled on any way
 static std::string PROTECTED_APPIDS[] = {"appLauncher", "launcher", "screenlock", "appScreenlock"};
@@ -31,7 +31,7 @@ static bool appCompare(app a, app b){
 
 
 
-class TaskHandler : public QAbstractListModel, public sdbus::ProxyInterfaces<sgy::pine::screenLock_proxy>
+class TaskHandler : public QAbstractListModel, public sdbus::ProxyInterfaces<org::gspine::screenLock_proxy>
 {
     Q_OBJECT
     QML_ELEMENT

@@ -1,4 +1,3 @@
-//#include "logger.h"
 #include <string>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
@@ -6,10 +5,10 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-#include <QDebug>
+#include "sway_utils.h"
 
 #include <memory>
-#include "sway_utils.h"
+#include <loglibrary.h>
 
 #include <iostream>
 
@@ -61,11 +60,11 @@ void send_ipc_message(const std::string& message, const int& payload_type, int s
     memcpy(&header[10], (uint32_t*)&payload_type, 4);
 
     if (write(sock_fd, &header[0], 14) == -1) {
-        qDebug() << "Could not send header";
+        ERROR("Could not sent IPC header!");
     }
 
     if (write(sock_fd, message.c_str(), message_length) == -1) {
-        qDebug() << "Could not send message";
+        ERROR("Could not send IPC message!");
     }
 }
 
@@ -73,7 +72,7 @@ void send_ipc_message(const std::string& message, const int& payload_type, int s
 int init_sway_socket(const int& timeout_sec){
     char* socket_path = getenv("SWAYSOCK");
     if (socket_path == nullptr) {
-        qDebug() << "SWAYSOCK environment variable is not set!";
+        ERROR("SWAYSOCK environment variable is not set!");
         exit(1);
     }
 
@@ -84,6 +83,7 @@ int init_sway_socket(const int& timeout_sec){
     strcpy(address.sun_path, socket_path);
 
     if (connect(sock_fd, (sockaddr*)&address, sizeof(address)) == -1) {
+        ERROR("Could not open Sway socket at path {}", socket_path);
         exit(1);
     }
 
@@ -92,7 +92,7 @@ int init_sway_socket(const int& timeout_sec){
     timeout.tv_usec = 0;
 
     if (setsockopt(sock_fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) == -1) {
-        qDebug() << "Could not set timeout on socket: " << strerror(errno);
+        ERROR("Could not set timeout on socket: {}", strerror(errno));
     }
 
     return sock_fd;

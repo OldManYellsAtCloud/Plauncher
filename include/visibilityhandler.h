@@ -4,10 +4,9 @@
 #include <QQmlEngine>
 
 #include "direction-client-glue.h"
-#include "screenlock-client-glue.h"
 
-#define DBUS_DESTINATION "org.gspine.display"
-#define DBUS_OBJECTPATH  "/org/gspine/display"
+#define DBUS_DESTINATION "org.gspine.gesture"
+#define DBUS_OBJECTPATH  "/org/gspine/gesture"
 
 
 class VisibilityHandler : public QObject, public sdbus::ProxyInterfaces<org::gspine::Gesture_proxy>
@@ -31,9 +30,8 @@ public:
 
 protected:
     // handle dbus event generated upon a directional touch event
-    void onTouchEvent(const std::string& direction);
+    void onTouchEvent();
     void testEvent(const bool screenState);
-    void onScreenLocked(const bool& screenLocked) override;
 
 signals:
     void visibleChanged();

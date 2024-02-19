@@ -27,17 +27,9 @@ bool VisibilityHandler::isVisible()
     return visible;
 }
 
-void VisibilityHandler::onTouchEvent(const std::string &direction)
+void VisibilityHandler::onTouchEvent()
 {
-    if (direction == "TOP_TO_BOTTOM"){
-        unhide();
-    }
+    unhide();
 }
 
-void VisibilityHandler::onScreenLocked(const bool &screenLocked)
-{
-    if (screenLocked && visible){
-        hide();
-    }
-}
 
