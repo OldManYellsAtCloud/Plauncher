@@ -153,4 +153,10 @@ Window {
             img: "file:" + model.picture
         }
     }
+
+    Text {
+        text: qsTr("Nothing to see here!")
+        anchors.centerIn: taskmanagerList
+        visible: taskmanagerList.count == 0
+    }
 }
