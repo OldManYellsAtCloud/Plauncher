@@ -21,21 +21,21 @@ private:
 #else
     bool visible = false;
 #endif
+    bool screenLocked = false;
 public:
     explicit VisibilityHandler(QObject *parent = nullptr);
     ~VisibilityHandler();
     Q_INVOKABLE void hide();
     Q_INVOKABLE void unhide();
     bool isVisible();
+    Q_INVOKABLE void lockScreen(bool slock);
 
 protected:
     // handle dbus event generated upon a directional touch event
     void onTouchEvent();
-    void testEvent(const bool screenState);
 
 signals:
     void visibleChanged();
-
 };
 
 

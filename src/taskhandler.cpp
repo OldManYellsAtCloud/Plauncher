@@ -57,7 +57,9 @@ std::vector<app> filterOutputs(QJsonArray outputList){
 }
 
 TaskHandler::TaskHandler(QObject *parent)
-    : QAbstractListModel{parent}, ProxyInterfaces(DISPLAY_DBUS_DESTINATION, DISPLAY_DBUS_OBJECTPATH)
+    : QAbstractListModel{parent},
+      ProxyInterfaces(DISPLAY_DBUS_DESTINATION, DISPLAY_DBUS_OBJECTPATH),
+      screenLocked_{false}
 {
     m_roleNames[RoleNames::PidRole] = "pid";
     m_roleNames[RoleNames::PictureRole] = "picture";
@@ -95,13 +97,14 @@ void TaskHandler::initWindowList()
 void TaskHandler::onScreenLocked(const bool &screenLocked)
 {
     LOG("Screen locked signal: {}", screenLocked);
+    screenLocked_ = screenLocked;
     if (screenLocked){
         lastActivePid = hideActiveWindow();
     } else if (lastActivePid > 0) {
         bringWindowToForeground(QString::number(lastActivePid));
         lastActivePid = 0;
     }
-
+    emit screenLockChanged();
 }
 
 std::vector<app> TaskHandler::getWindowList()

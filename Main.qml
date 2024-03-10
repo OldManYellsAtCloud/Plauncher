@@ -28,7 +28,11 @@ Window {
 
     TaskHandler {
         id: taskHandler
+        onScreenLocked_Changed: {
+            visibilityHandler.lockScreen(screenLocked_)
+        }
     }
+
 
     Dialog {
         id: shutdownDialog

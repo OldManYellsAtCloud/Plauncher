@@ -47,6 +47,9 @@ private:
     void addTask(int pid);
     void removeTask(int pid);
     void initWindowList();
+    bool screenLocked_;
+
+    Q_PROPERTY(bool screenLocked_ READ isScreenLocked NOTIFY screenLockChanged)
 
 protected:
     void onScreenLocked(const bool& screenLocked) override;
@@ -62,6 +65,7 @@ public:
     int rowCount(const QModelIndex &parent) const override;
     QVariant data(const QModelIndex &index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
+    bool isScreenLocked(){return screenLocked_;}
 
     enum RoleNames {
         PidRole = Qt::UserRole,
@@ -69,7 +73,7 @@ public:
     };
 
 signals:
-
+    void screenLockChanged();
 };
 
 #endif // TASKHANDLER_H
