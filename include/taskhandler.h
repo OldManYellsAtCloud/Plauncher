@@ -15,8 +15,8 @@
 #define DISPLAY_DBUS_DESTINATION "org.gspine.display"
 #define DISPLAY_DBUS_OBJECTPATH  "/org/gspine/display"
 
-// these app IDs shouldn't be hidden/handled on any way
-static std::string PROTECTED_APPIDS[] = {"appLauncher", "launcher", "screenlock", "appScreenlock"};
+// these app IDs shouldn't be hidden/handled on any way - they supposed to handle themselves
+static std::string PROTECTED_APPIDS[] = {"appLauncher", "launcher", "screenlock", "appscreenlock"};
 
 struct app {
     std::string name;
