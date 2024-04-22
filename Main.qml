@@ -87,6 +87,9 @@ Window {
         width: parent.width
         anchors.top: brightnessText.bottom
         bottomPadding: 5
+
+        focusPolicy: Qt.NoFocus
+
         onValueChanged: {
             brightnessHandler.brightness = slider.value
         }
@@ -107,6 +110,8 @@ Window {
         anchors.right: parent.right
         anchors.top: slider.bottom
         anchors.bottom: taskmanagerList.top
+
+        focusPolicy: Qt.NoFocus
 
         cellWidth: (parent.width / 4) - 5
 
@@ -141,6 +146,9 @@ Window {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
+
+        focusPolicy: Qt.NoFocus
+
         height: 70
 
         spacing: 10
