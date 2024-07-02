@@ -7,8 +7,6 @@
 #define __sdbuscpp__screenlock_client_glue_h__proxy__H__
 
 #include <sdbus-c++/sdbus-c++.h>
-#include <string>
-#include <tuple>
 
 namespace org {
 namespace gspine {
@@ -22,12 +20,22 @@ protected:
     screenLock_proxy(sdbus::IProxy& proxy)
         : proxy_(proxy)
     {
-        proxy_.uponSignal("screenLocked").onInterface(INTERFACE_NAME).call([this](const bool& screenLocked){ this->onScreenLocked(screenLocked); });
+
     }
+
+    screenLock_proxy(const screenLock_proxy&) = delete;
+    screenLock_proxy& operator=(const screenLock_proxy&) = delete;
+    screenLock_proxy(screenLock_proxy&&) = delete;
+    screenLock_proxy& operator=(screenLock_proxy&&) = delete;
 
     ~screenLock_proxy() = default;
 
     virtual void onScreenLocked(const bool& screenLocked) = 0;
+
+    void registerProxy()
+    {
+        proxy_.uponSignal("screenLocked").onInterface(INTERFACE_NAME).call([this](const bool& screenLocked){ this->onScreenLocked(screenLocked); });
+    }
 
 private:
     sdbus::IProxy& proxy_;

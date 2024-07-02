@@ -1,7 +1,7 @@
 #include "visibilityhandler.h"
 #include <loglibrary.h>
 
-VisibilityHandler::VisibilityHandler(QObject *parent): ProxyInterfaces(DBUS_DESTINATION, DBUS_OBJECTPATH), QObject{parent}
+VisibilityHandler::VisibilityHandler(QObject *parent): ProxyInterfaces(sdbus::ServiceName{DBUS_DESTINATION}, sdbus::ObjectPath{DBUS_OBJECTPATH}), QObject{parent}
 {
     registerProxy();
 }

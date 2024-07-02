@@ -58,7 +58,7 @@ std::vector<app> filterOutputs(QJsonArray outputList){
 
 TaskHandler::TaskHandler(QObject *parent)
     : QAbstractListModel{parent},
-      ProxyInterfaces(DISPLAY_DBUS_DESTINATION, DISPLAY_DBUS_OBJECTPATH),
+    ProxyInterfaces(sdbus::ServiceName{DISPLAY_DBUS_DESTINATION}, sdbus::ObjectPath{DISPLAY_DBUS_OBJECTPATH}),
       screenLocked_{false}
 {
     m_roleNames[RoleNames::PidRole] = "pid";
