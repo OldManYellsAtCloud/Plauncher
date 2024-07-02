@@ -6,8 +6,6 @@
 #define __sdbuscpp__direction_client_glue_h__proxy__H__
 
 #include <sdbus-c++/sdbus-c++.h>
-#include <string>
-#include <tuple>
 
 namespace org {
 namespace gspine {
@@ -21,12 +19,21 @@ protected:
     Gesture_proxy(sdbus::IProxy& proxy)
         : proxy_(proxy)
     {
-        proxy_.uponSignal("TOP_TO_BOTTOM").onInterface(INTERFACE_NAME).call([this](){ this->onTouchEvent(); });
     }
+
+    Gesture_proxy(const Gesture_proxy&) = delete;
+    Gesture_proxy& operator=(const Gesture_proxy&) = delete;
+    Gesture_proxy(Gesture_proxy&&) = delete;
+    Gesture_proxy& operator=(Gesture_proxy&&) = delete;
 
     ~Gesture_proxy() = default;
 
     virtual void onTouchEvent() = 0;
+
+    void registerProxy()
+    {
+        proxy_.uponSignal("TOP_TO_BOTTOM").onInterface(INTERFACE_NAME).call([this](){ this->onTouchEvent(); });
+    }
 
 private:
     sdbus::IProxy& proxy_;
