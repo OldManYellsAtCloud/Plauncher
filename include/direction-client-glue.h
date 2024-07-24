@@ -13,7 +13,7 @@ namespace gspine {
 class Gesture_proxy
 {
 public:
-    static constexpr const char* INTERFACE_NAME = "org.gspine.Gesture";
+    static constexpr const char* INTERFACE_NAME = "org.gspine.Hardware";
 
 protected:
     Gesture_proxy(sdbus::IProxy& proxy)

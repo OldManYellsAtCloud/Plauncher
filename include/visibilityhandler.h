@@ -5,8 +5,8 @@
 
 #include "direction-client-glue.h"
 
-#define DBUS_DESTINATION "org.gspine.gesture"
-#define DBUS_OBJECTPATH  "/org/gspine/gesture"
+#define DBUS_DESTINATION "org.gspine.hardware"
+#define DBUS_OBJECTPATH  "/org/gspine/hardware"
 
 
 class VisibilityHandler : public QObject, public sdbus::ProxyInterfaces<org::gspine::Gesture_proxy>
