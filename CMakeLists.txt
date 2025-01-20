@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 find_package(Qt6 6.2 REQUIRED COMPONENTS Quick QuickControls2)
 find_package(sdbus-c++)
-find_package(LogLibrary)
+find_package(loglib)
 
 qt_add_executable(appLauncher
     src/main.cpp
@@ -31,7 +31,7 @@ qt_add_qml_module(appLauncher
 )
 
 target_link_libraries(appLauncher
-    PRIVATE Qt6::Quick Qt6::QuickControls2 sdbus-c++ LogLibrary
+    PRIVATE Qt6::Quick Qt6::QuickControls2 sdbus-c++ loglib
 )
 
 target_include_directories(appLauncher PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -43,4 +43,4 @@ install(TARGETS appLauncher
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DENABLE_DEBUG")

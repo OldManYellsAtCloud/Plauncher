@@ -16,7 +16,7 @@ class VisibilityHandler : public QObject, public sdbus::ProxyInterfaces<org::gsp
     Q_PROPERTY(bool visible READ isVisible NOTIFY visibleChanged)
 
 private:
-#ifdef DEBUG
+#ifdef ENABLE_DEBUG
     bool visible = true;
 #else
     bool visible = false;

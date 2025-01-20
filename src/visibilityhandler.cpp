@@ -1,5 +1,5 @@
 #include "visibilityhandler.h"
-#include <loglibrary.h>
+#include <loglib/loglib.h>
 
 VisibilityHandler::VisibilityHandler(QObject *parent): ProxyInterfaces(sdbus::ServiceName{DBUS_DESTINATION}, sdbus::ObjectPath{DBUS_OBJECTPATH}), QObject{parent}
 {
@@ -37,7 +37,7 @@ void VisibilityHandler::onTouchEvent()
 
 void VisibilityHandler::lockScreen(bool slock)
 {
-    LOG("VisibilityHandler: lock screen request: {}", slock);
+    LOG_INFO_F("VisibilityHandler: lock screen request: {}", slock);
     screenLocked = slock;
     if (screenLocked)
         hide();

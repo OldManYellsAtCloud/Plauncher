@@ -1,10 +1,10 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-
 #include <QQuickStyle>
 
-#include "settings.h"
+#include <loglib/loglib.h>
 
+#include "settings.h"
 #include "launchermodel.h"
 #include "visibilityhandler.h"
 #include "brightnesshandler.h"
@@ -20,6 +20,9 @@
 
 int main(int argc, char *argv[])
 {
+    loglib::logger().setName("launcher");
+    loglib::logger().registerLogger(logging::LOGGER_FILE);
+
     QQuickStyle::setStyle("Material");
     QGuiApplication app(argc, argv);
     // needed to persist settings by Qt

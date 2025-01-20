@@ -3,7 +3,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
-#include <loglibrary.h>
+#include <loglib/loglib.h>
 
 #include "taskhandler.h"
 #include "sway_utils.h"
@@ -96,7 +96,7 @@ void TaskHandler::initWindowList()
 
 void TaskHandler::onScreenLocked(const bool &screenLocked)
 {
-    LOG("Screen locked signal: {}", screenLocked);
+    LOG_INFO_F("Screen locked signal: {}", screenLocked);
     screenLocked_ = screenLocked;
     if (screenLocked){
         lastActivePid = hideActiveWindow();
@@ -124,12 +124,12 @@ void TaskHandler::addTask(int pid){
     auto it = std::find_if(newWindowList.begin(), newWindowList.end(), comparator);
 
     if (it == newWindowList.end()){
-        ERROR("Could not find pid {} in Sway tree!", pid);
+        LOG_ERROR_F("Could not find pid {} in Sway tree!", pid);
         return;
     }
 
     if (isProtectedWindow((*it).name)){
-        LOG("{} window is protected", (*it).name);
+        LOG_INFO_F("{} window is protected", (*it).name);
         return;
     }
 
@@ -160,7 +160,7 @@ void TaskHandler::removeTask(int pid)
     auto it = std::find_if(windowList.begin(), windowList.end(), comparator);
 
     if (it == windowList.end()){
-        ERROR("Could not find app to close! PID: {}", pid);
+        LOG_ERROR_F("Could not find app to close! PID: {}", pid);
         return;
     }
 
@@ -196,7 +196,7 @@ void TaskHandler::taskCallback(std::string response){
 int TaskHandler::hideActiveWindow()
 {
     std::vector<app> windowList = getWindowList();
-    LOG("Received {} windows", windowList.size());
+    LOG_INFO_F("Received {} windows", windowList.size());
     for (const auto& window: windowList){
         if (window.visible){
             send_sway_message("[pid=" + std::to_string(window.pid) + "] focus", message_type::RUN_COMMAND);

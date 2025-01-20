@@ -1,13 +1,14 @@
+#include <loglib/loglib.h>
 #include "settings.h"
 
 #include <QFileInfo>
 #include <QDir>
-#include <loglibrary.h>
+
 
 void Settings::init(QString path){
     QFileInfo fi(path);
     if (!fi.exists() || !fi.isDir()){
-        ERROR("{} doesn't exists or not a folder", path.toStdString());
+        LOG_ERROR_F("{} doesn't exists or not a folder", path.toStdString());
         throw std::logic_error("Configuration path doesn't exist.");
     }
 
@@ -23,7 +24,7 @@ void Settings::init(QString path){
             l.appId = qs.value(l.name + "/appId", "-").toString();
 
             if (l.command == "-" || l.iconPath == "-"){
-                ERROR("{} config file is borked. Skipping.", f.toStdString());
+                LOG_ERROR_F("{} config file is borked. Skipping.", f.toStdString());
                 continue;
             }
 
